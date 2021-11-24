@@ -1,5 +1,5 @@
-#Test script for checking Sidecar health for Moonbeam network deployments
-#Usage:
+# Test script for checking Sidecar health for Moonbeam network deployments
+# Usage:
 # - from command line, type "python3 sidecarhealthcheck" to run endpoint tests on all known Sidecar deployments.
 # - from command line, type "python3 sidecarhealthcheck [network name1] [network name2]..." to run endpoint tests on specified network(s).
 # To add more networks or endpoints, modify the respective dictionary directly in code.
@@ -12,8 +12,7 @@ import sys
 # Define networks
 networks = {}
 networks["moonriver"]="https://moonriver-rest-api.moonriver.moonbeam.network"  
-networks["moonbaserelay"]="https://alphanet-rest-api.testnet.moonbeam.network"
-#networks["testfail"]="https://moonriver-rest-api.moonriver.moonbeammer.network" 
+networks["moonbaserelay"]="https://alphanet-rest-api.testnet.moonbeam.network" 
 
 # Define api-endpoints
 endpoints = {}
@@ -23,23 +22,23 @@ endpoints["headblock"]="/blocks/head"
 endpoints["headblockheader"]="/blocks/head/header"
 endpoints["block"]="/blocks/"
 
-# the server seems to be blocking Python default request header, so have to mock one. 
+# The server seems to be blocking Python default request header, so have to mock one. 
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
-# number of samples to take for the retrieve block endpoint test
+# Number of samples to take for the retrieve block endpoint test
 blocksamplenumber = 5
 
-#network's head block number
+# Network's head block number
 networkheadblocknum = {}
 
-#helper method to form the URL for the HTTP request, parameter is optional
+# Helper method to form the URL for the HTTP request, parameter is optional
 def form_request(base_url, end_point, parameter = None):
       if parameter is None:
             return base_url+end_point
       else:
             return base_url+end_point+str(parameter)
 
-#helper method to execute the HTTP request
+# Helper method to execute the HTTP request
 def perform_test(network, endpoint):
       if endpoint == "block":
             if network not in networkheadblocknum.keys():
@@ -53,7 +52,7 @@ def perform_test(network, endpoint):
             request_url = form_request(networks[network], endpoints[endpoint])
       return requests.get(url = request_url, headers=headers)
 
-#Accepts the network name, endpoint name, and a boolean for whether to display the full JSON resonse object
+# Accepts the network name, endpoint name, and a boolean for whether to display the full JSON resonse object
 def perform_and_display(network, endpoint, verbose):
       r = perform_test(network, endpoint)
       if r.status_code == requests.codes.ok:
@@ -66,7 +65,7 @@ def perform_and_display(network, endpoint, verbose):
             print("HTTP response status code is: " + str(r.status_code))
       print()
 
-#Perform the standard endpoint tests for a given network
+# Perform the standard endpoint tests for a given network
 def perform_standard_tests(network):
       perform_and_display(network, "nodeversion", True)
       perform_and_display(network, "runtimespec", True)
