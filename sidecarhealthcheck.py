@@ -5,18 +5,17 @@
 # To add more networks or endpoints, modify the respective dictionary directly in code.
 # Please check the Substrate-sidecar-API for what the endpoints do: https://paritytech.github.io/substrate-api-sidecar/dist/
 
-# importing the requests library
 import requests
 import random
 import sys
 
-# networks
+# Define networks
 networks = {}
 networks["moonriver"]="https://moonriver-rest-api.moonriver.moonbeam.network"  
 networks["moonbaserelay"]="https://alphanet-rest-api.testnet.moonbeam.network"
 #networks["testfail"]="https://moonriver-rest-api.moonriver.moonbeammer.network" 
 
-# api-endpoints
+# Define api-endpoints
 endpoints = {}
 endpoints["nodeversion"]="/node/version"
 endpoints["runtimespec"]="/runtime/spec"
