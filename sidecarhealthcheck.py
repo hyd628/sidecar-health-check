@@ -1,7 +1,7 @@
 # Test script for checking Sidecar health for Moonbeam network deployments
 # Usage:
-# - from command line, type "python3 sidecarhealthcheck" to run endpoint tests on all known Sidecar deployments.
-# - from command line, type "python3 sidecarhealthcheck [network name1] [network name2]..." to run endpoint tests on specified network(s).
+# - from command line, type "python3 sidecarhealthcheck.py" to run endpoint tests on all known Sidecar deployments.
+# - from command line, type "python3 sidecarhealthcheck.py [network name1] [network name2]..." to run endpoint tests on specified network(s).
 # To add more networks or endpoints, modify the respective dictionary directly in code.
 # Please check the Substrate-sidecar-API for more information on the endpoints: https://paritytech.github.io/substrate-api-sidecar/dist/
 
