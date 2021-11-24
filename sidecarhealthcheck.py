@@ -3,7 +3,7 @@
 # - from command line, type "python3 sidecarhealthcheck" to run endpoint tests on all known Sidecar deployments.
 # - from command line, type "python3 sidecarhealthcheck [network name1] [network name2]..." to run endpoint tests on specified network(s).
 # To add more networks or endpoints, modify the respective dictionary directly in code.
-# Please check the Substrate-sidecar-API for what the endpoints do: https://paritytech.github.io/substrate-api-sidecar/dist/
+# Please check the Substrate-sidecar-API for more information on the endpoints: https://paritytech.github.io/substrate-api-sidecar/dist/
 
 import requests
 import random
