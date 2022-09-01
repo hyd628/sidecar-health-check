@@ -11,8 +11,7 @@ import sys
 
 # Define networks
 networks = {}
-networks["moonriver"]="https://moonriver-rest-api.moonriver.moonbeam.network"  
-networks["moonbaserelay"]="https://alphanet-rest-api.testnet.moonbeam.network" 
+networks["localsidecar"]="http://127.0.0.1:8080"
 
 # Define api-endpoints
 endpoints = {}
@@ -20,16 +19,27 @@ endpoints["nodeversion"]="/node/version"
 endpoints["runtimespec"]="/runtime/spec"
 endpoints["headblock"]="/blocks/head"
 endpoints["headblockheader"]="/blocks/head/header"
-endpoints["block"]="/blocks/"
+endpoints["randomblock"]="/blocks/"
+endpoints["knownissueblocks"]="/blocks/"
+endpoints["specificblock"] = "/blocks/"
 
 # The server seems to be blocking Python default request header, so have to mock one. 
 headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
 # Number of samples to take for the retrieve block endpoint test
-blocksamplenumber = 5
+blocksamplenumber = 10
 
 # Network's head block number
 networkheadblocknum = {}
+
+# Dictionary containing known problematic blocks that should be checked, specific to Moonbeam networks
+
+problematicblocks = {
+      'moonbase':[6600, 6601],
+      'moonbeam':[],
+      'moonriver':[]
+}
+
 
 # Helper method to form the URL for the HTTP request, parameter is optional
 def form_request(base_url, end_point, parameter = None):
@@ -39,8 +49,9 @@ def form_request(base_url, end_point, parameter = None):
             return base_url+end_point+str(parameter)
 
 # Helper method to execute the HTTP request
-def perform_test(network, endpoint):
-      if endpoint == "block":
+
+def perform_test(network, endpoint, parameter= None):
+      if endpoint == "randomblock":
             if network not in networkheadblocknum.keys():
                   r = perform_test(network, "runtimespec")
                   if r.status_code == requests.codes.ok:
@@ -48,13 +59,21 @@ def perform_test(network, endpoint):
                         headblockheight = data["at"]["height"]
                         networkheadblocknum[network] = int(headblockheight)
             request_url = form_request(networks[network], endpoints[endpoint], random.randint(1, networkheadblocknum[network]))
+      elif endpoint == "specificblock":
+            request_url = form_request(networks[network], endpoints[endpoint], parameter)
+      elif endpoint == "knownissueblocks":
+            request_url = form_request(networks[network], endpoints["nodeversion"])
+            for blocknum in problematicblocks[requests.get(url=request_url, headers=headers).json()['clientImplName']]:
+                  print("Known Issue Block Test: " + str(blocknum))
+                  perform_and_display(network, "specificblock", True, blocknum)
       else:
             request_url = form_request(networks[network], endpoints[endpoint])
+      
       return requests.get(url = request_url, headers=headers)
 
 # Accepts the network name, endpoint name, and a boolean for whether to display the full JSON resonse object
-def perform_and_display(network, endpoint, verbose):
-      r = perform_test(network, endpoint)
+def perform_and_display(network, endpoint, verbose, parameter = None):
+      r = perform_test(network, endpoint, parameter)
       if r.status_code == requests.codes.ok:
             print("Network: {"+network+ "} Endpoint: {"+ endpoint+ "} test completed successfully in " + str(r.elapsed.total_seconds()) + " seconds.")
             if verbose:
@@ -71,9 +90,10 @@ def perform_standard_tests(network):
       perform_and_display(network, "runtimespec", True)
       perform_and_display(network, "headblock", False)
       perform_and_display(network, "headblockheader", True)
+      perform_and_display(network, "knownissueblocks", True)
       for i in range (blocksamplenumber):
-            print ("Block Test #"+str(i+1)+":")
-            perform_and_display(network, "block", False)
+            print ("Random Block Test #"+str(i+1)+":")
+            perform_and_display(network, "randomblock", False)
 
 
 def main():
